@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="kk" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TúrLendir (Түрлендір) | Қазақстандық онлайн файл түрлендіргіш</title>
+    <meta name="description" content="TúrLendir — қазақ нақышындағы әмбебап бұлттық файл түрлендіргіш. Құжаттар, суреттер, аудио, бейне және 200-ден астам форматтарды жылдам әрі қауіпсіз түрлендіріңіз.">
+    
+    <!-- Kazakh Style Favicon (Turquoise Sun & Ornament) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='15' fill='%2300afca'/><circle cx='16' cy='16' r='6' fill='%23f59e0b'/><path d='M16 2L18 8L16 6L14 8Z' fill='%23f59e0b'/><path d='M16 30L18 24L16 26L14 24Z' fill='%23f59e0b'/><path d='M2 16L8 18L6 16L8 14Z' fill='%23f59e0b'/><path d='M30 16L24 18L26 16L24 14Z' fill='%23f59e0b'/></svg>">
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        // Kazakh National Palette: Sky Blue & Steppe Gold
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7', // Sky Blue (Қазақ көк туының реңкі)
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        gold: {
+                            400: '#fde047',
+                            500: '#eab308',
+                            600: '#d97706', // Steppe Gold (Алтын күн мен қыран реңкі)
+                            700: '#b45309',
+                        },
+                        darkbg: {
+                            DEFAULT: '#0a1120', // Deep Steppe Night
+                            header: '#0f1a30',
+                            card: '#13213d',
+                            border: '#1f3458',
+                            hover: '#1b2c4e',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Client-side conversion libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-[#f4f8fb] dark:bg-[#0a1120] text-gray-900 dark:text-gray-100 min-h-screen flex flex-col font-sans transition-colors duration-200">
+
+    <!-- TOP DECORATIVE KAZAKH ORNAMENT RIBBON -->
+    <div class="h-1.5 w-full bg-gradient-to-r from-brand-600 via-gold-500 to-brand-600"></div>
+
+    <!-- HEADER NAVIGATION -->
+    <header class="sticky top-0 z-50 backdrop-blur-md bg-white/90 dark:bg-[#0f1a30]/90 border-b border-gray-200 dark:border-[#1f3458] transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+            
+            <!-- Left: Brand Logo (TúrLendir / Түрлендір) -->
+            <div class="flex items-center gap-8">
+                <a href="#" class="flex items-center gap-3 text-xl font-bold tracking-tight text-gray-900 dark:text-white group">
+                    <!-- Stylized Kazakh Sun & Cloud Ornament Logo -->
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white shadow-md shadow-brand-500/30 group-hover:scale-105 transition-transform border border-gold-500/40 relative">
+                        <i class="fa-solid fa-cloud text-base text-white"></i>
+                        <span class="absolute -top-1 -right-1 w-3 h-3 bg-gold-500 rounded-full border-2 border-darkbg-header shadow"></span>
+                    </div>
+                    
+                    <div class="flex flex-col">
+                        <div class="flex items-center gap-1.5 leading-none">
+                            <span class="text-xl font-extrabold text-brand-600 dark:text-brand-400">Túr</span><span class="text-xl font-bold text-gray-800 dark:text-white">Lendir</span>
+                            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-gold-500/15 text-gold-600 dark:text-gold-400 border border-gold-500/30">KZ</span>
+                        </div>
+                        <span class="text-[9px] font-medium text-gray-500 dark:text-brand-300 tracking-wider">ТҮРЛЕНДІР · БҰЛТТЫҚ ПОРТАЛ</span>
+                    </div>
+                </a>
+
+                <!-- Desktop Nav Links -->
+                <nav class="hidden md:flex items-center gap-1 text-sm font-medium">
+                    <!-- Tools Dropdown Trigger -->
+                    <div class="relative group">
+                        <button id="toolsDropdownBtn" class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-brand-50/50 dark:hover:bg-darkbg-card transition-colors">
+                            <span>Құралдар</span>
+                            <i class="fa-solid fa-chevron-down text-xs opacity-70 group-hover:rotate-180 transition-transform"></i>
+                        </button>
+                        <!-- Dropdown Menu -->
+                        <div class="absolute left-0 mt-1 w-64 p-2 bg-white dark:bg-darkbg-card border border-gray-200 dark:border-darkbg-border rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50">
+                            <a href="#converters" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-gray-200 hover:bg-brand-50 dark:hover:bg-darkbg-hover">
+                                <i class="fa-solid fa-file-pdf text-red-500 w-4"></i>
+                                <div>
+                                    <div class="font-semibold text-gray-900 dark:text-white">Құжат түрлендіргіш</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">PDF, DOCX, TXT, ODT...</div>
+                                </div>
+                            </a>
+                            <a href="#converters" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-gray-200 hover:bg-brand-50 dark:hover:bg-darkbg-hover">
+                                <i class="fa-solid fa-image text-brand-500 w-4"></i>
+                                <div>
+                                    <div class="font-semibold text-gray-900 dark:text-white">Кескін түрлендіргіш</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, WEBP, SVG...</div>
+                                </div>
+                            </a>
+                            <a href="#converters" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-gray-200 hover:bg-brand-50 dark:hover:bg-darkbg-hover">
+                                <i class="fa-solid fa-headphones text-gold-500 w-4"></i>
+                                <div>
+                                    <div class="font-semibold text-gray-900 dark:text-white">Аудио түрлендіргіш</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">MP3, WAV, FLAC, M4A...</div>
+                                </div>
+                            </a>
+                            <a href="#converters" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-gray-200 hover:bg-brand-50 dark:hover:bg-darkbg-hover">
+                                <i class="fa-solid fa-video text-purple-500 w-4"></i>
+                                <div>
+                                    <div class="font-semibold text-gray-900 dark:text-white">Бейне түрлендіргіш</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">MP4, AVI, MKV, MOV...</div>
+                                </div>
+                            </a>
+                            <a href="#converters" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-gray-200 hover:bg-brand-50 dark:hover:bg-darkbg-hover">
+                                <i class="fa-solid fa-file-zipper text-emerald-500 w-4"></i>
+                                <div>
+                                    <div class="font-semibold text-gray-900 dark:text-white">Мұрағат түрлендіргіш</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">ZIP, RAR, 7Z, TAR...</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- API Dropdown Trigger -->
+                    <div class="relative group">
+                        <button class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-brand-50/50 dark:hover:bg-darkbg-card transition-colors">
+                            <span>API</span>
+                            <i class="fa-solid fa-chevron-down text-xs opacity-70 group-hover:rotate-180 transition-transform"></i>
+                        </button>
+                        <div class="absolute left-0 mt-1 w-56 p-2 bg-white dark:bg-darkbg-card border border-gray-200 dark:border-darkbg-border rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50">
+                            <a href="#apiSection" class="block px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-gray-200 hover:bg-brand-50 dark:hover:bg-darkbg-hover">
+                                <div class="font-semibold text-gray-900 dark:text-white">API құжаттамасы</div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400">Жүйеге жылдам біріктіру</div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <a href="#pricingSection" class="px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-brand-50/50 dark:hover:bg-darkbg-card transition-colors">
+                        Тарифтер
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Right: Actions -->
+            <div class="flex items-center gap-3">
+                <!-- Theme Toggle -->
+                <button id="themeToggleBtn" aria-label="Тақырыпты ауыстыру" class="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-darkbg-card transition-colors">
+                    <i class="fa-solid fa-moon hidden dark:inline text-base text-gold-400"></i>
+                    <i class="fa-solid fa-sun dark:hidden text-base text-gold-600"></i>
+                </button>
+
+                <!-- Kazakh Flag Badge -->
+                <div class="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-brand-50 dark:bg-[#142340] text-brand-700 dark:text-brand-300 border border-brand-200 dark:border-brand-500/30">
+                    <span class="w-2.5 h-2.5 rounded-full bg-gold-500 shadow-sm"></span>
+                    <span>Қазақстан</span>
+                </div>
+
+                <!-- Auth Buttons -->
+                <button onclick="openAuthModal('login')" class="hidden sm:inline-flex text-sm font-semibold px-3.5 py-1.5 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-darkbg-card transition-colors">
+                    Кіру
+                </button>
+                <button onclick="openAuthModal('register')" class="inline-flex text-sm font-semibold px-4 py-1.5 rounded-lg bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-500 hover:to-brand-600 text-white shadow-sm transition-all border border-brand-400/30">
+                    Тіркелу
+                </button>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobileMenuBtn" class="md:hidden p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-darkbg-card">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Drawer -->
+        <div id="mobileMenu" class="md:hidden hidden px-4 pt-2 pb-4 space-y-2 border-t border-gray-200 dark:border-darkbg-border bg-white dark:bg-darkbg-card">
+            <a href="#converters" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-darkbg-hover">Құралдар</a>
+            <a href="#apiSection" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-darkbg-hover">API</a>
+            <a href="#pricingSection" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-darkbg-hover">Тарифтер</a>
+            <div class="pt-2 border-t border-gray-200 dark:border-darkbg-border flex gap-2">
+                <button onclick="openAuthModal('login')" class="flex-1 py-2 text-center text-sm font-medium rounded-md border border-gray-300 dark:border-darkbg-border">Кіру</button>
+                <button onclick="openAuthModal('register')" class="flex-1 py-2 text-center text-sm font-medium rounded-md bg-brand-600 text-white">Тіркелу</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO SECTION WITH KAZAKH NATIONAL AESTHETIC & ORNAMENT -->
+    <section class="relative bg-gradient-to-b from-[#eaf4fb] via-[#f0f8fd] to-[#f4f8fb] dark:from-[#0f1d38] dark:via-[#0c162b] dark:to-[#0a1120] border-b border-gray-200 dark:border-darkbg-border pt-14 pb-24 px-4 text-center transition-colors kazakh-ornament-bg overflow-hidden">
+        
+        <!-- Subtle Kazakh Symmetrical Ram-Horn Ornament SVG Watermark -->
+        <div class="absolute inset-0 pointer-events-none flex justify-between items-center opacity-5 dark:opacity-10 px-8">
+            <svg class="w-64 h-64 text-brand-500" viewBox="0 0 200 200" fill="currentColor">
+                <path d="M100 20 C120 20 140 40 140 65 C140 90 120 110 95 110 C80 110 70 100 70 85 C70 70 82 60 95 60 C105 60 112 67 112 75 C112 80 108 84 103 84 C98 84 95 81 95 78 C95 75 97 73 100 73 C101 73 102 74 102 75 C102 85 85 92 82 85 C80 80 85 70 95 70 C110 70 125 82 125 100 C125 120 105 135 85 135 C55 135 30 110 30 75 C30 35 65 20 100 20 Z"/>
+                <path d="M100 20 C80 20 60 40 60 65 C60 90 80 110 105 110 C120 110 130 100 130 85 C130 70 118 60 105 60 C95 60 88 67 88 75 C88 80 92 84 97 84 C102 84 105 81 105 78 C105 75 103 73 100 73 C99 73 98 74 98 75 C98 85 115 92 118 85 C120 80 115 70 105 70 C90 70 75 82 75 100 C75 120 95 135 115 135 C145 135 170 110 170 75 C170 35 135 20 100 20 Z"/>
+            </svg>
+            <svg class="w-64 h-64 text-brand-500 transform scale-x-[-1]" viewBox="0 0 200 200" fill="currentColor">
+                <path d="M100 20 C120 20 140 40 140 65 C140 90 120 110 95 110 C80 110 70 100 70 85 C70 70 82 60 95 60 C105 60 112 67 112 75 C112 80 108 84 103 84 C98 84 95 81 95 78 C95 75 97 73 100 73 C101 73 102 74 102 75 C102 85 85 92 82 85 C80 80 85 70 95 70 C110 70 125 82 125 100 C125 120 105 135 85 135 C55 135 30 110 30 75 C30 35 65 20 100 20 Z"/>
+                <path d="M100 20 C80 20 60 40 60 65 C60 90 80 110 105 110 C120 110 130 100 130 85 C130 70 118 60 105 60 C95 60 88 67 88 75 C88 80 92 84 97 84 C102 84 105 81 105 78 C105 75 103 73 100 73 C99 73 98 74 98 75 C98 85 115 92 118 85 C120 80 115 70 105 70 C90 70 75 82 75 100 C75 120 95 135 115 135 C145 135 170 110 170 75 C170 35 135 20 100 20 Z"/>
+            </svg>
+        </div>
+
+        <div class="max-w-3xl mx-auto relative z-10">
+            <!-- Kazakh Badge -->
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-brand-500/10 text-brand-700 dark:text-brand-300 border border-brand-500/20 mb-4">
+                <i class="fa-solid fa-sun text-gold-500"></i>
+                <span>Қазақстанда жасалған онлайн түрлендіру сервисі</span>
+            </div>
+
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-gray-900 dark:text-white mb-4">
+                Кез келген файлды <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 via-brand-500 to-gold-500">түрлендіру</span>
+            </h1>
+            <p class="text-base sm:text-lg text-gray-600 dark:text-gray-300 leading-relaxed max-w-2xl mx-auto">
+                Файлыңызды тастаңыз және қалаған форматыңызды таңдаңыз. TúrLendir жүйесі құжаттар, суреттер, аудио, бейне, мұрағаттар және 200-ден астам форматты браузеріңізде жылдам, сапалы әрі қауіпсіз түрлендіреді.
+            </p>
+        </div>
+    </section>
+
+    <!-- MAIN CONVERTER SECTION (Floats slightly into Hero) -->
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 -mt-12 sm:-mt-14 mb-20 z-10 w-full flex-1">
+        
+        <!-- Quick Preset Filter / Converter Bar -->
+        <div class="bg-white dark:bg-darkbg-card border border-gray-200 dark:border-darkbg-border rounded-2xl shadow-2xl p-4 sm:p-6 mb-6 kazakh-gold-border">
+            
+            <!-- Top Controls Row -->
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pb-4 border-b border-gray-100 dark:border-darkbg-border">
+                
+                <!-- Quick From -> To selector -->
+                <div class="flex flex-wrap items-center gap-2 text-sm text-gray-600 dark:text-gray-300 w-full sm:w-auto">
+                    <span class="font-semibold text-gray-900 dark:text-white">Түрлендіру:</span>
+                    
+                    <button onclick="openFormatPicker('source', null)" id="quickSourceFormatBtn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-300 dark:border-darkbg-border bg-gray-50 dark:bg-darkbg-hover hover:border-brand-500 font-bold text-gray-800 dark:text-gray-200 transition-colors">
+                        <span id="quickSourceFormatText">Кез келген</span>
+                        <i class="fa-solid fa-chevron-down text-xs opacity-60"></i>
+                    </button>
+
+                    <span class="text-gray-400 font-medium">мынаған:</span>
+
+                    <button onclick="openFormatPicker('target', null)" id="quickTargetFormatBtn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-300 dark:border-darkbg-border bg-gray-50 dark:bg-darkbg-hover hover:border-brand-500 font-bold text-brand-600 dark:text-brand-400 transition-colors">
+                        <span id="quickTargetFormatText">PDF</span>
+                        <i class="fa-solid fa-chevron-down text-xs opacity-60"></i>
+                    </button>
+                </div>
+
+                <!-- Big Select File Split Button in Kazakh Sky-Blue & Gold Accent -->
+                <div class="relative inline-flex items-stretch shadow-lg shadow-brand-600/20 rounded-xl overflow-hidden w-full sm:w-auto">
+                    <input type="file" id="fileInput" multiple class="hidden">
+                    <button id="selectFileBtn" class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2.5 px-6 py-3.5 bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-500 hover:to-brand-600 active:bg-brand-800 text-white font-bold text-base transition-all">
+                        <i class="fa-solid fa-folder-open text-lg text-gold-400"></i>
+                        <span>Файлды таңдау</span>
+                    </button>
+                    <button id="uploadSourceDropdownBtn" class="px-3.5 bg-brand-700 hover:bg-brand-800 text-white border-l border-brand-800/40 flex items-center justify-center transition-colors">
+                        <i class="fa-solid fa-chevron-down text-xs"></i>
+                    </button>
+
+                    <!-- Upload Sources Dropdown -->
+                    <div id="uploadSourcesMenu" class="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-darkbg-card border border-gray-200 dark:border-darkbg-border rounded-xl shadow-2xl p-1.5 hidden z-40">
+                        <button onclick="triggerComputerUpload()" class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-left text-gray-700 dark:text-gray-200 hover:bg-brand-50 dark:hover:bg-darkbg-hover">
+                            <i class="fa-solid fa-desktop text-brand-500 w-4"></i>
+                            <span>Компьютерден</span>
+                        </button>
+                        <button onclick="openUrlModal()" class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-left text-gray-700 dark:text-gray-200 hover:bg-brand-50 dark:hover:bg-darkbg-hover">
+                            <i class="fa-solid fa-link text-brand-500 w-4"></i>
+                            <span>URL сілтемесі бойынша</span>
+                        </button>
+                        <button onclick="simulateCloudService('Google Drive')" class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-left text-gray-700 dark:text-gray-200 hover:bg-brand-50 dark:hover:bg-darkbg-hover">
+                            <i class="fa-brands fa-google-drive text-gold-500 w-4"></i>
+                            <span>Google Drive арқылы</span>
+                        </button>
+                        <button onclick="simulateCloudService('Dropbox')" class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-left text-gray-700 dark:text-gray-200 hover:bg-brand-50 dark:hover:bg-darkbg-hover">
+                            <i class="fa-brands fa-dropbox text-blue-500 w-4"></i>
+                            <span>Dropbox арқылы</span>
+                        </button>
+                        <button onclick="simulateCloudService('OneDrive')" class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-left text-gray-700 dark:text-gray-200 hover:bg-brand-50 dark:hover:bg-darkbg-hover">
+                            <i class="fa-brands fa-microsoft text-blue-600 w-4"></i>
+                            <span>OneDrive арқылы</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Drag and Drop Active Zone (when empty) -->
+            <div id="dropZone" class="mt-4 border-2 border-dashed border-brand-300 dark:border-darkbg-border hover:border-brand-500 dark:hover:border-brand-400 rounded-xl p-8 sm:p-12 text-center cursor-pointer transition-all bg-brand-50/20 dark:bg-darkbg-card/40">
+                <div class="max-w-md mx-auto">
+                    <div class="w-16 h-16 mx-auto mb-3 rounded-2xl bg-gradient-to-br from-brand-500/10 to-gold-500/10 text-brand-600 dark:text-brand-400 flex items-center justify-center text-3xl border border-brand-500/20 shadow-inner">
+                        <i class="fa-solid fa-cloud-arrow-up text-brand-500"></i>
+                    </div>
+                    <p class="text-base font-bold text-gray-800 dark:text-gray-100 mb-1">
+                        Файлдарды осы жерге тастаңыз
+                    </p>
+                    <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-4">
+                        немесе құрылғыңыздан таңдау үшін басыңыз. Барлық форматтар қолжетімді.
+                    </p>
+                    <div class="flex flex-wrap items-center justify-center gap-2 text-xs text-gray-400">
+                        <span class="px-2.5 py-1 rounded-md bg-white dark:bg-darkbg-border font-medium text-brand-700 dark:text-brand-300 border border-brand-200 dark:border-transparent">PDF</span>
+                        <span class="px-2.5 py-1 rounded-md bg-white dark:bg-darkbg-border font-medium text-brand-700 dark:text-brand-300 border border-brand-200 dark:border-transparent">PNG</span>
+                        <span class="px-2.5 py-1 rounded-md bg-white dark:bg-darkbg-border font-medium text-brand-700 dark:text-brand-300 border border-brand-200 dark:border-transparent">JPG</span>
+                        <span class="px-2.5 py-1 rounded-md bg-white dark:bg-darkbg-border font-medium text-brand-700 dark:text-brand-300 border border-brand-200 dark:border-transparent">DOCX</span>
+                        <span class="px-2.5 py-1 rounded-md bg-white dark:bg-darkbg-border font-medium text-brand-700 dark:text-brand-300 border border-brand-200 dark:border-transparent">MP4</span>
+                        <span class="px-2.5 py-1 rounded-md bg-white dark:bg-darkbg-border font-medium text-brand-700 dark:text-brand-300 border border-brand-200 dark:border-transparent">MP3</span>
+                        <span class="px-2.5 py-1 rounded-md bg-white dark:bg-darkbg-border font-medium text-brand-700 dark:text-brand-300 border border-brand-200 dark:border-transparent">ZIP</span>
+                        <span class="font-semibold text-gold-500">+200 формат</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- File List / Conversion Queue (Visible when files added) -->
+            <div id="fileQueueSection" class="hidden mt-6 space-y-3">
+                <div class="flex items-center justify-between text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-2">
+                    <span id="queueCountText">Файлдар тізімі (0)</span>
+                    <button onclick="clearAllFiles()" class="text-red-500 hover:text-red-600 transition-colors">Барлығын тазарту</button>
+                </div>
+
+                <div id="fileQueueList" class="space-y-2.5">
+                    <!-- Dynamic File Items will be rendered here -->
+                </div>
+
+                <!-- Bottom Batch Action Bar -->
+                <div class="mt-6 pt-4 border-t border-gray-100 dark:border-darkbg-border flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center gap-3 w-full sm:w-auto">
+                        <button onclick="triggerComputerUpload()" class="inline-flex items-center gap-2 px-3.5 py-2 text-sm font-semibold rounded-lg border border-gray-300 dark:border-darkbg-border hover:bg-gray-50 dark:hover:bg-darkbg-hover text-gray-700 dark:text-gray-200 transition-colors">
+                            <i class="fa-solid fa-plus text-xs text-brand-600"></i>
+                            <span>Тағы файл қосу</span>
+                        </button>
+                        
+                        <label class="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400 cursor-pointer select-none">
+                            <input type="checkbox" id="saveToCloudCheck" class="rounded border-gray-300 text-brand-600 focus:ring-brand-500">
+                            <span>Нәтижелерді ZIP мұрағатына біріктіру</span>
+                        </label>
+                    </div>
+
+                    <div class="flex items-center gap-3 w-full sm:w-auto">
+                        <button id="downloadAllBtn" onclick="downloadAllFiles()" class="hidden inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm bg-emerald-600 hover:bg-emerald-700 text-white transition-all shadow-md">
+                            <i class="fa-solid fa-download"></i>
+                            <span>Барлығын жүктеп алу</span>
+                        </button>
+
+                        <button id="convertAllBtn" onclick="startAllConversions()" class="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-500 hover:to-brand-600 text-white transition-all shadow-lg shadow-brand-600/30">
+                            <i class="fa-solid fa-arrows-rotate"></i>
+                            <span>Барлығын түрлендіру</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- KEY FEATURES SECTION -->
+    <section class="py-16 bg-white dark:bg-darkbg-card border-t border-b border-gray-200 dark:border-darkbg-border transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-12">
+                <span class="text-xs font-bold uppercase tracking-wider text-brand-600 dark:text-brand-400 bg-brand-500/10 px-2.5 py-1 rounded-md border border-brand-500/20">Артықшылықтары</span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white mt-2 mb-3">
+                    Неліктен TúrLendir таңдалады?
+                </h2>
+                <p class="text-sm sm:text-base text-gray-500 dark:text-gray-400">
+                    Қазақстандық пайдаланушылар мен бизнестерге арналған ең жылдам және қауіпсіз түрлендіру сервисі.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Feature 1 -->
+                <div class="p-6 rounded-2xl bg-gray-50/80 dark:bg-[#101c34] border border-gray-200 dark:border-darkbg-border hover:border-brand-500/40 transition-all">
+                    <div class="w-12 h-12 rounded-xl bg-brand-500/10 text-brand-600 dark:text-brand-400 flex items-center justify-center text-xl mb-4">
+                        <i class="fa-solid fa-layer-group"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">200+ Формат қолдауы</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                        Аудио, бейне, құжат, электрондық кітап, мұрағат, кескін, кесте және презентацияның барлық заманауи түрлерін қолдайды.
+                    </p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="p-6 rounded-2xl bg-gray-50/80 dark:bg-[#101c34] border border-gray-200 dark:border-darkbg-border hover:border-gold-500/40 transition-all">
+                    <div class="w-12 h-12 rounded-xl bg-gold-500/10 text-gold-600 dark:text-gold-400 flex items-center justify-center text-xl mb-4">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Деректер қауіпсіздігі</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                        Сіздің файлдарыңызға ешкім қол жеткізе алмайды. Түрлендіруден кейін файлдар жүйеден біржола автоматты түрде өшіріледі.
+                    </p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="p-6 rounded-2xl bg-gray-50/80 dark:bg-[#101c34] border border-gray-200 dark:border-darkbg-border hover:border-brand-500/40 transition-all">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl mb-4">
+                        <i class="fa-solid fa-sliders"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Жоғары сапа және баптаулар</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                        Түрлендіру параметрлерін басқарыңыз: кескін сапасы, өлшемі, бейне битрейті және сығу деңгейі қол астыңызда.
+                    </p>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="p-6 rounded-2xl bg-gray-50/80 dark:bg-[#101c34] border border-gray-200 dark:border-darkbg-border hover:border-brand-500/40 transition-all">
+                    <div class="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center text-xl mb-4">
+                        <i class="fa-solid fa-code"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Қуатты API жүйесі</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                        Өз веб-сайтыңызға немесе CRM жүйеңізге файл түрлендіруді оңай біріктіріңіз. Толық REST API қолжетімді.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FORMAT DIRECTORY SECTION -->
+    <section id="converters" class="py-16 bg-[#f4f8fb] dark:bg-[#0a1120] transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white mb-2">
+                        Қолдау көрсетілетін құралдар
+                    </h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                        Санатты таңдаңыз немесе қажетті форматты жылдам іздеңіз
+                    </p>
+                </div>
+
+                <!-- Quick Format Search -->
+                <div class="relative w-full md:w-72">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                    <input type="text" id="formatDirectorySearch" placeholder="Форматты іздеу (мысалы, MP4, PDF)..." class="w-full pl-9 pr-4 py-2.5 text-sm rounded-xl border border-gray-200 dark:border-darkbg-border bg-white dark:bg-darkbg-card text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+            </div>
+
+            <div id="formatCategoryGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Categories rendered dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- DEVELOPER API SHOWCASE -->
+    <section id="apiSection" class="py-16 bg-white dark:bg-darkbg-card border-t border-gray-200 dark:border-darkbg-border transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-brand-600 dark:text-brand-400 bg-brand-500/10 px-2.5 py-1 rounded-md border border-brand-500/20">Әзірлеушілерге</span>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mt-3 mb-4">
+                        Қолданбаңызға файл түрлендіруді қосыңыз
+                    </h2>
+                    <p class="text-gray-600 dark:text-gray-300 text-sm sm:text-base mb-6 leading-relaxed">
+                        TúrLendir API кез келген бағдарламалау тілінде файлдарды автоматты өңдеуге және бұлтқа сақтауға арналған ыңғайлы шешім ұсынады.
+                    </p>
+
+                    <div class="space-y-3 mb-6">
+                        <div class="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-300">
+                            <i class="fa-solid fa-check text-brand-500"></i>
+                            <span>AWS S3, Google Cloud және жергілікті серверлермен интеграция</span>
+                        </div>
+                        <div class="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-300">
+                            <i class="fa-solid fa-check text-brand-500"></i>
+                            <span>Webhooks арқылы нақты уақыттағы хабарландырулар</span>
+                        </div>
+                        <div class="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-300">
+                            <i class="fa-solid fa-check text-brand-500"></i>
+                            <span>Python, Node.js, PHP, Go тілдеріне арналған дайын үлгілер</span>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-3">
+                        <button onclick="copyApiKeyDemo()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-600 to-brand-700 text-white font-bold text-sm hover:opacity-95 transition-opacity shadow-md">
+                            API кілтін алу
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Code Example Card -->
+                <div class="bg-[#0b1426] rounded-2xl border border-brand-500/30 shadow-2xl overflow-hidden font-mono text-xs sm:text-sm">
+                    <div class="flex items-center justify-between px-4 py-3 bg-[#080d1a] border-b border-brand-500/20">
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-red-500"></span>
+                            <span class="w-3 h-3 rounded-full bg-gold-500"></span>
+                            <span class="w-3 h-3 rounded-full bg-brand-500"></span>
+                            <span class="ml-2 text-gray-400 font-sans text-xs">cURL / TúrLendir API</span>
+                        </div>
+                        <button onclick="copyCodeSnippet()" id="copyCodeBtn" class="text-gray-400 hover:text-white transition-colors text-xs flex items-center gap-1">
+                            <i class="fa-regular fa-copy"></i>
+                            <span>Көшіру</span>
+                        </button>
+                    </div>
+                    <pre class="p-4 text-brand-100 overflow-x-auto leading-relaxed"><code>curl -X POST https://api.turlendir.kz/v1/jobs \
+  -H "Authorization: Bearer YOUR_KZ_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tasks": {
+      "upload-file": {
+        "operation": "import/upload"
+      },
+      "convert-to-pdf": {
+        "operation": "convert",
+        "input": "upload-file",
+        "output_format": "pdf"
+      }
+    }
+  }'</code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRICING SECTION IN KAZAKHSTANI TENGE (₸) -->
+    <section id="pricingSection" class="py-16 bg-[#f4f8fb] dark:bg-[#0a1120] border-t border-gray-200 dark:border-darkbg-border transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-12">
+                <span class="text-xs font-bold uppercase tracking-wider text-gold-600 dark:text-gold-400 bg-gold-500/10 px-2.5 py-1 rounded-md border border-gold-500/20">Тарифтік жоспарлар</span>
+                <h2 class="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white mt-3 mb-3">
+                    Тиімді әрі қарапайым бағалар
+                </h2>
+                <p class="text-sm sm:text-base text-gray-500 dark:text-gray-400">
+                    Күнделікті 25 түрлендіру тегін. Үлкен көлемдер үшін тиімді ұлттық валютадағы (₸) тарифтер.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                <!-- Free Plan -->
+                <div class="bg-white dark:bg-darkbg-card border border-gray-200 dark:border-darkbg-border rounded-2xl p-6 sm:p-8 flex flex-col justify-between shadow-sm">
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1">Тегін (Бастапқы)</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">Жай пайдаланушыларға</p>
+                        <div class="text-3xl font-black text-gray-900 dark:text-white mb-6">0 ₸ <span class="text-xs font-normal text-gray-500">/ мәңгілік</span></div>
+                        <ul class="space-y-3 text-sm text-gray-600 dark:text-gray-300 mb-8">
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-brand-500 text-xs"></i> <span>Күніне 25 түрлендіру минуты</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-brand-500 text-xs"></i> <span>1 ГБ дейінгі файл өлшемі</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-brand-500 text-xs"></i> <span>Барлық негізгі форматтар</span></li>
+                        </ul>
+                    </div>
+                    <button onclick="openAuthModal('register')" class="w-full py-2.5 rounded-xl border border-gray-300 dark:border-darkbg-border font-bold text-sm hover:bg-gray-50 dark:hover:bg-darkbg-hover transition-colors">
+                        Тегін бастау
+                    </button>
+                </div>
+
+                <!-- Package (Most popular in Kazakhstan) -->
+                <div class="bg-white dark:bg-darkbg-card border-2 border-brand-500 rounded-2xl p-6 sm:p-8 flex flex-col justify-between shadow-2xl relative">
+                    <span class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-brand-600 to-gold-500 text-white text-[11px] font-black uppercase tracking-wider px-3.5 py-0.5 rounded-full shadow-md">
+                        Ең танымал
+                    </span>
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1">Пакет (Бір реттік)</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">Мерзімсіз минуттар</p>
+                        <div class="text-3xl font-black text-brand-600 dark:text-brand-400 mb-6">4,500 ₸ <span class="text-xs font-normal text-gray-500">/ 500 минут</span></div>
+                        <ul class="space-y-3 text-sm text-gray-600 dark:text-gray-300 mb-8">
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold-500 text-xs"></i> <span>500 түрлендіру минуты</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold-500 text-xs"></i> <span>Мерзімі шектелмеген (күймейді)</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold-500 text-xs"></i> <span>Жоғары жылдамдықты кезек</span></li>
+                        </ul>
+                    </div>
+                    <button onclick="openPaymentModal('Пакет 500 минут', '4,500 ₸')" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-500 hover:to-brand-600 text-white font-bold text-sm transition-all shadow-md">
+                        Сатып алу
+                    </button>
+                </div>
+
+                <!-- Subscription -->
+                <div class="bg-white dark:bg-darkbg-card border border-gray-200 dark:border-darkbg-border rounded-2xl p-6 sm:p-8 flex flex-col justify-between shadow-sm">
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1">Айлық жазылым</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">Компаниялар мен мамандарға</p>
+                        <div class="text-3xl font-black text-gray-900 dark:text-white mb-6">3,900 ₸ <span class="text-xs font-normal text-gray-500">/ айына</span></div>
+                        <ul class="space-y-3 text-sm text-gray-600 dark:text-gray-300 mb-8">
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-brand-500 text-xs"></i> <span>Айына 1,000 минут</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-brand-500 text-xs"></i> <span>API кілттері мен шексіз бірлестік</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-brand-500 text-xs"></i> <span>24/7 жеке қолдау</span></li>
+                        </ul>
+                    </div>
+                    <button onclick="openPaymentModal('Айлық жазылым', '3,900 ₸')" class="w-full py-2.5 rounded-xl border border-gray-300 dark:border-darkbg-border font-bold text-sm hover:bg-gray-50 dark:hover:bg-darkbg-hover transition-colors">
+                        Жазылу
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER WITH KAZAKH ORNAMENT ACCENTS -->
+    <footer class="border-t border-gray-200 dark:border-darkbg-border bg-white dark:bg-[#0c1527] text-gray-500 dark:text-gray-400 text-sm py-12 transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-12">
+                <!-- Col 1 -->
+                <div class="col-span-2">
+                    <a href="#" class="flex items-center gap-3 text-lg font-bold text-gray-900 dark:text-white mb-3">
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white text-xs border border-gold-500/40">
+                            <i class="fa-solid fa-cloud"></i>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <span class="text-brand-600 dark:text-brand-400 font-extrabold">Túr</span><span>Lendir</span>
+                            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-gold-500/15 text-gold-600 dark:text-gold-400 ml-1">KZ</span>
+                        </div>
+                    </a>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 max-w-sm mb-4 leading-relaxed">
+                        TúrLendir — қазақ нақышында жасалған әмбебап бұлттық файл түрлендіргіш. Аудио, бейне, құжат, электрондық кітап, мұрағат, кескін және кесте пішімдерінің барлығын қолдайды.
+                    </p>
+                    <p class="text-xs text-gray-400">
+                        © 2026 TúrLendir (Түрлендір). Қазақстан. Барлық құқықтар қорғалған.
+                    </p>
+                </div>
+
+                <!-- Col 2: Company -->
+                <div>
+                    <h4 class="text-gray-900 dark:text-white font-bold mb-3 text-sm">Компания</h4>
+                    <ul class="space-y-2 text-xs sm:text-sm">
+                        <li><a href="#" onclick="showInfoToast('Біз туралы')" class="hover:text-brand-500 transition-colors">Біз туралы</a></li>
+                        <li><a href="#" onclick="showInfoToast('Қауіпсіздік саясаты')" class="hover:text-brand-500 transition-colors">Қауіпсіздік</a></li>
+                        <li><a href="#" onclick="showInfoToast('Байланыс орталығы')" class="hover:text-brand-500 transition-colors">Байланыс</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 3: Resources -->
+                <div>
+                    <h4 class="text-gray-900 dark:text-white font-bold mb-3 text-sm">Ресурстар</h4>
+                    <ul class="space-y-2 text-xs sm:text-sm">
+                        <li><a href="#" onclick="showInfoToast('Жаңалықтар блогы')" class="hover:text-brand-500 transition-colors">Блог</a></li>
+                        <li><a href="#" onclick="showInfoToast('Сервер күйі: Тұрақты')" class="hover:text-brand-500 transition-colors">Жүйе күйі</a></li>
+                        <li><a href="#apiSection" class="hover:text-brand-500 transition-colors">API құжаттамасы</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 4: Legal -->
+                <div>
+                    <h4 class="text-gray-900 dark:text-white font-bold mb-3 text-sm">Құқықтық ақпарат</h4>
+                    <ul class="space-y-2 text-xs sm:text-sm">
+                        <li><a href="#" onclick="showInfoToast('Құпиялылық саясаты')" class="hover:text-brand-500 transition-colors">Құпиялылық саясаты</a></li>
+                        <li><a href="#" onclick="showInfoToast('Қызмет көрсету шарттары')" class="hover:text-brand-500 transition-colors">Қызмет көрсету шарттары</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- FORMAT SELECTOR MODAL -->
+    <div id="formatPickerModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm hidden">
+        <div class="bg-white dark:bg-darkbg-card border border-gray-200 dark:border-darkbg-border rounded-2xl shadow-2xl max-w-2xl w-full max-h-[85vh] flex flex-col overflow-hidden animate-fadeIn">
+            <!-- Modal Header -->
+            <div class="p-4 sm:p-5 border-b border-gray-200 dark:border-darkbg-border flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">Форматты таңдаңыз</h3>
+                    <p id="formatPickerSub" class="text-xs text-gray-500 dark:text-gray-400">Қолжетімді форматтарды таңдаңыз немесе іздеңіз</p>
+                </div>
+                <button onclick="closeFormatPicker()" class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-white rounded-lg">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Modal Search & Categories -->
+            <div class="p-4 border-b border-gray-200 dark:border-darkbg-border space-y-3">
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                    <input type="text" id="formatModalSearch" placeholder="Формат атауын жазыңыз (мысалы, MP3, PNG, PDF)..." class="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-gray-200 dark:border-darkbg-border bg-gray-50 dark:bg-darkbg-hover text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+
+                <!-- Category Chips -->
+                <div id="modalCategoryChips" class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+                    <!-- Rendered by JS -->
+                </div>
+            </div>
+
+            <!-- Formats List Grid -->
+            <div id="modalFormatGrid" class="p-4 overflow-y-auto max-h-[45vh] grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5">
+                <!-- Rendered by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- CONVERSION SETTINGS (OPTIONS) MODAL -->
+    <div id="settingsModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm hidden">
+        <div class="bg-white dark:bg-darkbg-card border border-gray-200 dark:border-darkbg-border rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden animate-fadeIn">
+            <div class="p-5 border-b border-gray-200 dark:border-darkbg-border flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-wrench text-brand-500"></i>
+                    <h3 class="text-base font-bold text-gray-900 dark:text-white">Түрлендіру параметрлері</h3>
+                </div>
+                <button onclick="closeSettingsModal()" class="p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-white rounded-lg">
+                    <i class="fa-solid fa-xmark text-base"></i>
+                </button>
+            </div>
+
+            <div id="settingsModalBody" class="p-5 space-y-4 max-h-[65vh] overflow-y-auto text-sm">
+                <!-- Populated by JS based on file type -->
+            </div>
+
+            <div class="p-4 bg-gray-50 dark:bg-darkbg-hover border-t border-gray-200 dark:border-darkbg-border flex justify-end gap-2.5">
+                <button onclick="closeSettingsModal()" class="px-4 py-2 rounded-xl border border-gray-300 dark:border-darkbg-border text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-darkbg-card">
+                    Бас тарту
+                </button>
+                <button onclick="saveSettingsModal()" class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold shadow">
+                    Параметрлерді сақтау
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- URL IMPORT MODAL -->
+    <div id="urlModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm hidden">
+        <div class="bg-white dark:bg-darkbg-card border border-gray-200 dark:border-darkbg-border rounded-2xl shadow-2xl max-w-md w-full p-5 space-y-4 animate-fadeIn">
+            <div class="flex items-center justify-between">
+                <h3 class="text-base font-bold text-gray-900 dark:text-white">URL сілтемесі бойынша жүктеу</h3>
+                <button onclick="closeUrlModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p class="text-xs text-gray-500 dark:text-gray-400">Файлды интернеттен тікелей жүктеу үшін оның сілтемесін (URL) қойыңыз:</p>
+            <input type="url" id="urlInput" placeholder="https://example.com/sample.pdf" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-darkbg-border bg-gray-50 dark:bg-darkbg-hover text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="closeUrlModal()" class="px-4 py-2 rounded-xl border border-gray-300 dark:border-darkbg-border text-xs font-semibold">Бас тарту</button>
+                <button onclick="submitUrlFile()" class="px-4 py-2 rounded-xl bg-brand-600 text-white text-xs font-semibold">Жүктеу</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AUTH MODAL (LOGIN / REGISTER) -->
+    <div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm hidden">
+        <div class="bg-white dark:bg-darkbg-card border border-gray-200 dark:border-darkbg-border rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4 animate-fadeIn">
+            <div class="flex items-center justify-between">
+                <h3 id="authModalTitle" class="text-lg font-bold text-gray-900 dark:text-white">Кіру</h3>
+                <button onclick="closeAuthModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Электрондық пошта (Email)</label>
+                    <input type="email" id="authEmail" placeholder="siz@example.kz" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-darkbg-border bg-gray-50 dark:bg-darkbg-hover text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Құпия сөз</label>
+                    <input type="password" id="authPassword" placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-darkbg-border bg-gray-50 dark:bg-darkbg-hover text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+            </div>
+
+            <button onclick="submitAuth()" id="authSubmitBtn" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-500 hover:to-brand-600 text-white font-bold text-sm transition-all shadow">
+                Жүйеге кіру
+            </button>
+
+            <div class="relative text-center my-3">
+                <span class="text-xs text-gray-400 bg-white dark:bg-darkbg-card px-2 relative z-10">немесе</span>
+                <div class="absolute inset-x-0 top-1/2 -translate-y-1/2 border-t border-gray-200 dark:border-darkbg-border"></div>
+            </div>
+
+            <button onclick="simulateGoogleLogin()" class="w-full py-2.5 rounded-xl border border-gray-300 dark:border-darkbg-border text-sm font-semibold flex items-center justify-center gap-2 hover:bg-gray-50 dark:hover:bg-darkbg-hover transition-colors">
+                <i class="fa-brands fa-google text-red-500"></i>
+                <span>Google арқылы жалғастыру</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
